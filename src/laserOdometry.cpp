@@ -483,7 +483,7 @@ int main(int argc, char **argv)
                     }
 
                     //printf("coner_correspondance %d, plane_correspondence %d \n", corner_correspondence, plane_correspondence);
-                    printf("data association time %f ms \n", t_data.toc());
+                    // printf("data association time %f ms \n", t_data.toc());
 
                     if ((corner_correspondence + plane_correspondence) < 10)
                     {
@@ -497,9 +497,9 @@ int main(int argc, char **argv)
                     options.minimizer_progress_to_stdout = false;
                     ceres::Solver::Summary summary;
                     ceres::Solve(options, &problem, &summary);
-                    printf("solver time %f ms \n", t_solver.toc());
+                    // printf("solver time %f ms \n", t_solver.toc());
                 }
-                printf("optimization twice time %f \n", t_opt.toc());
+                // printf("optimization twice time %f \n", t_opt.toc());
 
                 t_w_curr = t_w_curr + q_w_curr * t_last_curr;
                 q_w_curr = q_w_curr * q_last_curr;
@@ -509,7 +509,7 @@ int main(int argc, char **argv)
 
             // publish odometry
             nav_msgs::Odometry laserOdometry;
-            laserOdometry.header.frame_id = "/camera_init";
+            laserOdometry.header.frame_id = "/world";  //"/camera_init";
             laserOdometry.child_frame_id = "/laser_odom";
             laserOdometry.header.stamp = ros::Time().fromSec(timeSurfPointsLessFlat);
             laserOdometry.pose.pose.orientation.x = q_w_curr.x();
@@ -526,7 +526,7 @@ int main(int argc, char **argv)
             laserPose.pose = laserOdometry.pose.pose;
             laserPath.header.stamp = laserOdometry.header.stamp;
             laserPath.poses.push_back(laserPose);
-            laserPath.header.frame_id = "/camera_init";
+            laserPath.header.frame_id = "/world";//"/camera_init";
             pubLaserPath.publish(laserPath);
 
             // transform corner features and plane features to the scan end point
@@ -589,8 +589,8 @@ int main(int argc, char **argv)
                 laserCloudFullRes3.header.frame_id = "/camera";
                 pubLaserCloudFullRes.publish(laserCloudFullRes3);
             }
-            printf("publication time %f ms \n", t_pub.toc());
-            printf("whole laserOdometry time %f ms \n \n", t_whole.toc());
+            // printf("publication time %f ms \n", t_pub.toc());
+            // printf("whole laserOdometry time %f ms \n \n", t_whole.toc());
             if(t_whole.toc() > 100)
                 ROS_WARN("odometry process over 100ms");
 
